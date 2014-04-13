@@ -1,0 +1,26 @@
+groups:
+  test-group:
+    output-a:
+      name: group-{{what}}
+      template: template
+    output-b:
+      name: group-{{say}}
+      template: template
+
+
+
+
+entries:
+  jobs:
+    job-a:
+      template: template
+      say: hello
+      what: world
+    job-b:
+      template: template
+      say: goodbye
+      what: world
+    more-jobs:
+      group: test-group
+      say: hello
+      what: earth
