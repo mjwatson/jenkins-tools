@@ -1,6 +1,5 @@
 require 'jenkins_api_client'
 require 'thor'
-require 'mustache'
 require 'fileutils'
   
 class JenkinsToolsCLI < Thor
@@ -93,7 +92,6 @@ class JenkinsToolsCLI < Thor
     end
 
     def regex
-      p options[:regex]
       options[:regex]
     end
 
@@ -188,18 +186,6 @@ class JenkinsToolsCLI < Thor
       end
     end
 end
-
-
-
-
-
-
-
-
-
-
-
-
 
 if $0 == __FILE__
   JenkinsToolsCLI.start(ARGV)
