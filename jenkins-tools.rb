@@ -150,10 +150,18 @@ class JenkinsToolsCLI < Thor
           raise "push should reference folder containing only folders."
         end
 
+        component_sym = component.to_sym
+        unless components.include? component_sym
+          next
+        end
+
+        re = Regexp.new(component_regex)
         listdir(dirpath) { |filename|
-          File.open("#{dirpath}/#{filename}") { |f|
-            output << [component.to_sym, filename.gsub('.xml',''), f.read]
-          }
+          if re =~ filename
+            File.open("#{dirpath}/#{filename}") { |f|
+              output << [component.to_sym, filename.gsub('.xml',''), f.read]
+            }
+          end
         }
       }
 
