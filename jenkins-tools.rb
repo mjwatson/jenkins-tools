@@ -11,6 +11,7 @@ class JenkinsToolsCLI < Thor
     class_option :component,   :aliases => "-c", :desc => "Jenkins component type [all|job|view|node]", :default => "all"
     class_option :regex,       :aliases => "-r", :desc => "Restrict to jenkins components matching regex"
     class_option :folder,      :aliases => "-f", :desc => "Folder to sync to or from."
+    class_option :trial,       :aliases => "-t", :desc => "Only print destructive updates (push/delete)."
 
     desc "list", "Lists the jenkins jobs."
     def list
@@ -30,7 +31,9 @@ class JenkinsToolsCLI < Thor
     desc "delete", "Deletes the jenkins configurations."
     def delete
       jenkins_entries { |component, name|
-        client.send(component).delete(name)
+        trial("delete", component, name) {
+          client.send(component).delete(name)
+        }
       }
     end
 
@@ -52,7 +55,9 @@ class JenkinsToolsCLI < Thor
     LONGDESC
     def push
        entries_to_push.each { |component, name, config_xml|
-         push_entry(component, name, config_xml)
+         trial("push", component, name) {
+           push_entry(component, name, config_xml)
+         }
        }
     end
     
@@ -192,6 +197,14 @@ class JenkinsToolsCLI < Thor
           client.node.post_config(name, config_xml)
         end
       end
+    end
+
+    def trial(description, component, name)
+       if options[:trial]
+         puts ">> #{description} >> #{component} #{name}"
+       else
+         yield
+       end
     end
 end
 
