@@ -55,9 +55,7 @@ class JenkinsToolsCLI < Thor
     LONGDESC
     def push
        entries_to_push.each { |component, name, config_xml|
-         trial("push", component, name) {
-           push_config(component, name, config_xml)
-         }
+         push_config(component, name, config_xml)
        }
     end
     
@@ -206,21 +204,20 @@ class JenkinsToolsCLI < Thor
         return
       end
 
-      puts "'#{pull_config(component, name)}'"
-      puts "----"
-      puts "'#{config_xml}'"
-
-      case component
-      when :job
-        client.job.create_or_update(name, config_xml)
-      when :view
-        client.view.create(name) if client.view.list(name).empty?
-        client.view.post_config(name, config_xml)
-      when :node
-        unless client.node.list(name).empty? or name == 'master'
-          client.node.post_config(name, config_xml)
+      trial("push", component, name) {
+        case component
+        when :job
+            client.job.create_or_update(name, config_xml)
+        when :view
+            client.view.create(name) if client.view.list(name).empty?
+            client.view.post_config(name, config_xml)
+        when :node
+            unless client.node.list(name).empty? or name == 'master'
+            client.node.post_config(name, config_xml)
+            end
         end
-      end
+      }
+
     end
 
     def trial(description, component, name)
