@@ -47,7 +47,7 @@ class TemplateTools
     end
 
     def config_path
-      options[:config]
+      options[:config] || "."
     end
 
     def regex
@@ -90,6 +90,7 @@ class TemplateTools
       puts data
     end
 end
+
 
 class TemplateToolsCLI < Thor
 
