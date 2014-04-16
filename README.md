@@ -8,6 +8,7 @@ All very much work in progress...
 Currently provides two scripts:
 
 * jenkins-tools.rb provides a command line interface for managing jenkins jobs, views and nodes.
+  
   For each, it can:
   - list the current entries
   - pull down the config.xml
@@ -20,9 +21,9 @@ Currently provides two scripts:
   The script can then push from a similar folder structure, updating and adding jobs as necessary.
 
 
-* template-tools.rb provides a command line interface for generating such a folder structure.
+* template-tools.rb provides support for generating such a folder structure.
 
-  It currently accepts a yaml configuration file and mustache templates.
+  It currently provides an example command line tool accepts a yaml configuration file and mustache templates.
   The configuration file specifies the output files that should be generated from which templates and which options.
   It also allows groups of templates to be specified, which can then be generated from the same set of configuration options.
 
