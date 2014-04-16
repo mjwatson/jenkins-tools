@@ -1,6 +1,7 @@
 require 'jenkins_api_client'
 require 'thor'
 require 'fileutils'
+require 'nokogiri'
   
 class JenkinsToolsCLI < Thor
 
@@ -194,7 +195,9 @@ class JenkinsToolsCLI < Thor
     end
 
     def pull_config(component, name)
-      client.send(component).get_config(name).strip
+      # Use Nokogiri to clean the xml
+      xml = client.send(component).get_config(name).strip
+      Nokogiri::XML(xml).to_xml
     end
 
     def push_config(component, name, config_xml)
