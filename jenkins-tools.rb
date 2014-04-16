@@ -12,6 +12,7 @@ class JenkinsToolsCLI < Thor
     class_option :regex,       :aliases => "-r", :desc => "Restrict to jenkins components matching regex"
     class_option :folder,      :aliases => "-f", :desc => "Folder to sync to or from."
     class_option :trial,       :aliases => "-t", :desc => "Only print destructive updates (push/delete)."
+    class_option :verbose,     :aliases => "-v", :desc => "Log to standard error."
 
     desc "list", "Lists the jenkins jobs."
     def list
@@ -68,7 +69,8 @@ class JenkinsToolsCLI < Thor
     end
 
     def connect
-      JenkinsApi::Client.new(options)
+      settings = { :log_level => (options[:verbose] ? Logger::INFO : Logger::WARN) }
+      JenkinsApi::Client.new(options.merge settings)
     end
 
     def jenkins_entries
