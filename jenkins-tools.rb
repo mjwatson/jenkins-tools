@@ -23,9 +23,8 @@ class JenkinsToolsCLI < Thor
 
     desc "pull", "Pulls the jenkins configuration."
     def pull
-        writer = pull_output
         jenkins_entries { |component, name|
-          writer.call(component, name, client.send(component).get_config(name))
+          writer.call(component, name, pull_config(component, name))
         }
     end
 
@@ -57,7 +56,7 @@ class JenkinsToolsCLI < Thor
     def push
        entries_to_push.each { |component, name, config_xml|
          trial("push", component, name) {
-           push_entry(component, name, config_xml)
+           push_config(component, name, config_xml)
          }
        }
     end
@@ -104,6 +103,11 @@ class JenkinsToolsCLI < Thor
 
     def component_regex
       regex || ""
+    end
+
+    def writer
+      @writer ||= pull_output
+      @writer
     end
 
     def pull_output
@@ -184,10 +188,28 @@ class JenkinsToolsCLI < Thor
          raise "push requires job name to be provided using --regex (-r) option."
        end
 
-       [ components[0], regex, $stdin.read]
+       [ components[0], regex, $stdin.read.strip ]
     end
 
-    def push_entry(component, name, config_xml)
+    def exists(component, name)
+      client.send(component).exists? name
+    end
+
+    def pull_config(component, name)
+      client.send(component).get_config(name).strip
+    end
+
+    def push_config(component, name, config_xml)
+
+      if exists(component, name) && pull_config(component, name) == config_xml
+        client.logger.info "No update required: #{component}, #{name}"
+        return
+      end
+
+      puts "'#{pull_config(component, name)}'"
+      puts "----"
+      puts "'#{config_xml}'"
+
       case component
       when :job
         client.job.create_or_update(name, config_xml)
